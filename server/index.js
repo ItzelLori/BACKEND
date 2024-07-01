@@ -7,10 +7,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-
-app.use(indexRoutes);
-
 app.use(morgan('dev'));
+app.use('/api', indexRoutes);
+
+
 
 app.listen(PORT)
 console.log('Server listening on port ' + PORT);

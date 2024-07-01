@@ -60,4 +60,129 @@ router.get('/administradores', async (req, res) => {
     }
 });
 
+//METODOS POST
+
+router.post('/profesor', async (req, res) => {
+    const { nombre, correoInstitucional, contraseña, Descripcion_profesional } = req.body;
+
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO Profesor (nombre, correoInstitucional, contraseña, Descripcion_profesional) VALUES (?, ?, ?, ?)',
+            [nombre, correoInstitucional, contraseña, Descripcion_profesional]
+        );
+
+        res.json({ message: 'Profesor inserted successfully', insertId: result.insertId });
+    } catch (err) {
+        console.error('Error inserting Profesor:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/curso', async (req, res) => {
+    const { nombreCurso, materia, instructor, Duracion, Descripcion, Requisitos } = req.body;
+
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO Curso (nombreCurso, materia, instructor, Duracion, Descripcion, Requisitos) VALUES (?, ?, ?, ?, ?, ?)',
+            [nombreCurso, materia, instructor, Duracion, Descripcion, Requisitos]
+        );
+
+        res.json({ message: 'Curso inserted successfully', insertId: result.insertId });
+    } catch (err) {
+        console.error('Error inserting Curso:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/alumno', async (req, res) => {
+    const { nombre, correoInstitucional, contraseña, boleta, carrera } = req.body;
+
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO Alumno (nombre, correoInstitucional, contraseña, boleta, carrera) VALUES (?, ?, ?, ?, ?)',
+            [nombre, correoInstitucional, contraseña, boleta, carrera]
+        );
+
+        res.json({ message: 'Alumno inserted successfully', insertId: result.insertId });
+    } catch (err) {
+        console.error('Error inserting Alumno:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/administrador', async (req, res) => {
+    const { Nombre, usuario, contraseña } = req.body;
+
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO Administradores (Nombre, usuario, contraseña) VALUES (?, ?, ?)',
+            [Nombre, usuario, contraseña]
+        );
+
+        res.json({ message: 'Administrador inserted successfully', insertId: result.insertId });
+    } catch (err) {
+        console.error('Error inserting Administrador:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/cursosinscritos', async (req, res) => {
+    const { curso, alumnoInscrito } = req.body;
+
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO CursosInscritos (curso, alumnoInscrito) VALUES (?, ?)',
+            [curso, alumnoInscrito]
+        );
+
+        res.json({ message: 'CursosInscritos inserted successfully', insertId: result.insertId });
+    } catch (err) {
+        console.error('Error inserting CursosInscritos:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/cursosimpartidos', async (req, res) => {
+    const { curso, instructor } = req.body;
+
+    try {
+        if (!isConnected) {
+            await connectDB();
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO CursosImpartidos (curso, instructor) VALUES (?, ?)',
+            [curso, instructor]
+        );
+
+        res.json({ message: 'CursosImpartidos inserted successfully', insertId: result.insertId });
+    } catch (err) {
+        console.error('Error inserting CursosImpartidos:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
 export default router;
