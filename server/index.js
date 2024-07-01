@@ -5,6 +5,8 @@ import indexRoutes from './routes/index.routes.js'
 import dotenv from 'dotenv';
 import cors from 'cors';
 
+
+app.use(cors());
 dotenv.config();
 
 const app = express();
