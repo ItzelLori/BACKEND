@@ -1,15 +1,18 @@
-// index.routes.js
 import { Router } from 'express';
 import { pool, connectDB, isConnected } from '../db.js';
 
 const router = Router();
 
+const ensureDBConnection = async () => {
+    if (!isConnected) {
+        await connectDB();
+    }
+};
+
+// GET Methods
 router.get('/profesores', async (req, res) => {
     try {
-        if (!isConnected) {
-            await connectDB();
-        }
-
+        await ensureDBConnection();
         const [rows] = await pool.query('SELECT * FROM Profesor');
         res.json(rows);
     } catch (err) {
@@ -20,10 +23,7 @@ router.get('/profesores', async (req, res) => {
 
 router.get('/cursos', async (req, res) => {
     try {
-        if (!isConnected) {
-            await connectDB();
-        }
-
+        await ensureDBConnection();
         const [rows] = await pool.query('SELECT * FROM Curso');
         res.json(rows);
     } catch (err) {
@@ -34,10 +34,7 @@ router.get('/cursos', async (req, res) => {
 
 router.get('/alumnos', async (req, res) => {
     try {
-        if (!isConnected) {
-            await connectDB();
-        }
-
+        await ensureDBConnection();
         const [rows] = await pool.query('SELECT * FROM Alumno');
         res.json(rows);
     } catch (err) {
@@ -48,10 +45,7 @@ router.get('/alumnos', async (req, res) => {
 
 router.get('/administradores', async (req, res) => {
     try {
-        if (!isConnected) {
-            await connectDB();
-        }
-
+        await ensureDBConnection();
         const [rows] = await pool.query('SELECT * FROM Administradores');
         res.json(rows);
     } catch (err) {
@@ -60,16 +54,16 @@ router.get('/administradores', async (req, res) => {
     }
 });
 
-//METODOS POST
-
+// POST Methods
 router.post('/profesor', async (req, res) => {
     const { nombre, correoInstitucional, contraseña, Descripcion_profesional } = req.body;
 
-    try {
-        if (!isConnected) {
-            await connectDB();
-        }
+    if (!nombre || !correoInstitucional || !contraseña || !Descripcion_profesional) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        await ensureDBConnection();
         const [result] = await pool.query(
             'INSERT INTO Profesor (nombre, correoInstitucional, contraseña, Descripcion_profesional) VALUES (?, ?, ?, ?)',
             [nombre, correoInstitucional, contraseña, Descripcion_profesional]
@@ -85,11 +79,12 @@ router.post('/profesor', async (req, res) => {
 router.post('/curso', async (req, res) => {
     const { nombreCurso, materia, instructor, Duracion, Descripcion, Requisitos } = req.body;
 
-    try {
-        if (!isConnected) {
-            await connectDB();
-        }
+    if (!nombreCurso || !materia || !instructor || !Duracion || !Descripcion || !Requisitos) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        await ensureDBConnection();
         const [result] = await pool.query(
             'INSERT INTO Curso (nombreCurso, materia, instructor, Duracion, Descripcion, Requisitos) VALUES (?, ?, ?, ?, ?, ?)',
             [nombreCurso, materia, instructor, Duracion, Descripcion, Requisitos]
@@ -105,11 +100,12 @@ router.post('/curso', async (req, res) => {
 router.post('/alumno', async (req, res) => {
     const { nombre, correoInstitucional, contraseña, boleta, carrera } = req.body;
 
-    try {
-        if (!isConnected) {
-            await connectDB();
-        }
+    if (!nombre || !correoInstitucional || !contraseña || !boleta || !carrera) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        await ensureDBConnection();
         const [result] = await pool.query(
             'INSERT INTO Alumno (nombre, correoInstitucional, contraseña, boleta, carrera) VALUES (?, ?, ?, ?, ?)',
             [nombre, correoInstitucional, contraseña, boleta, carrera]
@@ -125,11 +121,12 @@ router.post('/alumno', async (req, res) => {
 router.post('/administrador', async (req, res) => {
     const { Nombre, usuario, contraseña } = req.body;
 
-    try {
-        if (!isConnected) {
-            await connectDB();
-        }
+    if (!Nombre || !usuario || !contraseña) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        await ensureDBConnection();
         const [result] = await pool.query(
             'INSERT INTO Administradores (Nombre, usuario, contraseña) VALUES (?, ?, ?)',
             [Nombre, usuario, contraseña]
@@ -145,11 +142,12 @@ router.post('/administrador', async (req, res) => {
 router.post('/cursosinscritos', async (req, res) => {
     const { curso, alumnoInscrito } = req.body;
 
-    try {
-        if (!isConnected) {
-            await connectDB();
-        }
+    if (!curso || !alumnoInscrito) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        await ensureDBConnection();
         const [result] = await pool.query(
             'INSERT INTO CursosInscritos (curso, alumnoInscrito) VALUES (?, ?)',
             [curso, alumnoInscrito]
@@ -165,11 +163,12 @@ router.post('/cursosinscritos', async (req, res) => {
 router.post('/cursosimpartidos', async (req, res) => {
     const { curso, instructor } = req.body;
 
-    try {
-        if (!isConnected) {
-            await connectDB();
-        }
+    if (!curso || !instructor) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        await ensureDBConnection();
         const [result] = await pool.query(
             'INSERT INTO CursosImpartidos (curso, instructor) VALUES (?, ?)',
             [curso, instructor]
@@ -181,8 +180,5 @@ router.post('/cursosimpartidos', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-
-
 
 export default router;

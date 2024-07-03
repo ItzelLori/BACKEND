@@ -39,7 +39,10 @@ const connectDB = () => {
 
                     pool = createPool({
                         ...dbConfig,
-                        stream
+                        stream,
+                        waitForConnections: true,
+                        connectionLimit: 10,
+                        queueLimit: 0
                     });
 
                     pool.getConnection().then(connection => {
@@ -58,6 +61,16 @@ const connectDB = () => {
         sshClient.on('error', (err) => {
             console.error('SSH connection error:', err);
             reject(err);
+        });
+
+        sshClient.on('end', () => {
+            console.log('SSH connection ended');
+            isConnected = false;
+        });
+
+        sshClient.on('close', () => {
+            console.log('SSH connection closed');
+            isConnected = false;
         });
     });
 };
